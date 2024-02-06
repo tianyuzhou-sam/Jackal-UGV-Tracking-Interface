@@ -18,10 +18,10 @@ if __name__ == '__main__':
     x0 = np.array([-1.5, 0, 0])
     u0 = np.array([0, 0])
     T = 60
-    targets = [[-0.5,0.25], [1,-1], [2.2,-0.15], [2.2, 0.15], [-1.5,0]]
+    waypoints = [[-0.5,0.25], [1,-1], [2.2,-0.15], [2.2, 0.15], [-1.5,0]]
 
     # initialize MPC
-    MyMPC = ModelPredictiveControl(configDict, buildFlag, targets, saveFlag, config_file_name)
+    MyMPC = ModelPredictiveControl(configDict, buildFlag, waypoints, saveFlag, config_file_name)
 
     # Run our asynchronous main function forever
     asyncio.ensure_future(MyMPC.run(x0, T))

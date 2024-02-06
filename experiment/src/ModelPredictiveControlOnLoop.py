@@ -23,7 +23,7 @@ import math
 import rospy
 from geometry_msgs.msg import Twist
 
-class ModelPredictiveControl:
+class ModelPredictiveControlOnLoop:
     configDict: dict  # a dictionary for parameters
 
     def __init__(self, configDict: dict, buildFlag=True, waypoints=[[0,0]], saveFlag=False, config_file_name='config/config_jackal.json'):
@@ -165,7 +165,9 @@ class ModelPredictiveControl:
             if (self.reached < self.numWaypoints):               
                 # solve
                 ipoptTime, returnStatus, successFlag, algoTime, print_str, uNow = self.runOnce(self.stateNow, self.timeNow, self.waypoint)
+                read_waypoints = np.genfromtxt('experiment/waypoints.csv', delimiter=',')
 
+                
                 # apply control and forward propagate dynamics
                 # xNext = self.MyJackalSys.discDynFun(self.stateNow, uNow)
                 xNext = [xy[0], xy[1], yaw_now]
@@ -203,6 +205,12 @@ class ModelPredictiveControl:
                     print("reached waypoint")
                     print(self.reached)
                     print(self.waypoint)
+                    if not len(read_waypoints) == self.numWaypoints:
+                        self.waypoints = read_waypoints
+                        self.numWaypointss = len(read_waypoints)
+                        self.waypoint_position = self.waypoints[0]
+                        for idx in range(len(self.waypoints)-1):
+                            self.waypoint_position = np.hstack((self.waypoint_position, self.waypoints[idx+1])) 
                     if self.reached < self.numWaypoints:
                         self.waypoint = self.waypoints[self.reached]
 
@@ -310,27 +318,4 @@ class ModelPredictiveControl:
         plt.tight_layout()
         plt.show(block=blockFlag)
 
-
-if __name__ == '__main__':
-    # dictionary for configuration
-    # dt for Euler integration
-    configDict = {"dt": 0.1, "stepNumHorizon": 5, "startPointMethod": "zeroInput"}
-    config_file_name = 'config/config_jackal.json'
-
-    buildFlag = True
-    saveFlag = False
-
-    
-
-    x0 = np.array([0, 0, 0])
-    u0 = np.array([0, 0])
-    T = 20
-    waypoints = [[-0.,0.], [1,-0.5], [2,0]]
-
-    # initialize MPC
-    MyMPC = ModelPredictiveControl(configDict, buildFlag, waypoints, saveFlag, config_file_name)
-
-    # Run our asynchronous main function forever
-    asyncio.ensure_future(MyMPC.run(x0, T))
-    asyncio.get_event_loop().run_forever()
 

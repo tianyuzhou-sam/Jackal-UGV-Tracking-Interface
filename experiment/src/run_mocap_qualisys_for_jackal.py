@@ -81,7 +81,7 @@ async def main(config_file_name):
 
             data = np.array([position.x/1000.0, position.y/1000.0, position.z/1000.0, quat[0], quat[1], quat[2], quat[3], t_now], dtype=float)
 
-            print(position)
+            # print(position)
             # # for debugging
             # print("rotation matrix in array")
             # print(rotation.matrix)
@@ -107,7 +107,7 @@ async def main(config_file_name):
 
 
 if __name__ == "__main__":
-    config_file_name = 'config_jackal.json'
+    config_file_name = 'experiment/config/config_jackal.json'
     # Run our asynchronous main function forever
     asyncio.ensure_future(main(config_file_name))
     asyncio.get_event_loop().run_forever()
