@@ -235,7 +235,7 @@ class OptimalControlJackal:
         # for soc
         for idx in range(self.stepNumHorizon):
             if idx == 0:
-                xNow = parameter[0:self.dimStates]
+                xNow = xAll[0:self.dimStates]
                 target = parameter[self.dimStates:self.dimStates+2]
             else:
                 xNow = xAll[self.dimStates*(idx-1) : self.dimStates*idx]
