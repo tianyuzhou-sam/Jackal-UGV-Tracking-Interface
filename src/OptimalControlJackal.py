@@ -59,7 +59,7 @@ class OptimalControlJackal:
         self.timeTraj = self.dt * np.linspace(0, self.stepNumHorizon, num=self.stepNumHorizon+1)
 
         # constraints, dynamics equality constaints + other constraints
-        self.dimConstraint = self.stepNumHorizon*self.dimStates + 2*(self.stepNumHorizon-1)
+        self.dimConstraint = self.stepNumHorizon*self.dimStates + self.dimInputs*(self.stepNumHorizon-1)
 
         # build the NLP object if True
         if buildFlag:
@@ -273,12 +273,12 @@ class OptimalControlJackal:
         """
         xAll = decisionAll[0 : self.dimStates * self.stepNumHorizon]
         uAll = decisionAll[self.dimStates * self.stepNumHorizon : self.dimDecision]
-        fun = ca.SX.zeros(2 * (self.stepNumHorizon - 1))
+        fun = ca.SX.zeros(self.dimInputs * (self.stepNumHorizon - 1))
 
         uPrev = uAll[0: self.dimInputs]
 
         for idx in range(self.stepNumHorizon-1):
-            uNow = uAll[self.dimInputs*(idx+1) : self.dimInputs*(idx+2)]
+            uNow = uAll[self.dimInputs*(idx+1) : self.dimInputs*(idx+1)+2]
             fun[2*idx] = self.MyJackalSys._linearAccFun(uPrev, uNow)
             fun[2*idx+1] = self.MyJackalSys._angularAccFun(uPrev, uNow)
             uPrev = uNow
